@@ -5,7 +5,7 @@ def is_tree(char):
 
 def trees_for_slope(slope):
     
-    file_name = "inputs/day3_input.txt"
+    file_name = "inputs/day3.txt"
     file = open(file_name, "r")
     rows = []
     
@@ -49,4 +49,5 @@ def multi_tree():
 
 if __name__ == "__main__":
     print ("Day3")
+    trees_for_slope([3,1])
     multi_tree()

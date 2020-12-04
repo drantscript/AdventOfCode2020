@@ -24,7 +24,7 @@ def verify_password(pw):
 
 def parse():
     
-    file_name = "day2_input.txt"
+    file_name = "inputs/day2.txt"
     array = []
     file = open(file_name, "r")
     
@@ -56,7 +56,7 @@ def parse():
     
 def parse_two():
     
-    file_name = "day2_input.txt"
+    file_name = "inputs/day2.txt"
     array = []
     file = open(file_name, "r")
     
@@ -86,4 +86,5 @@ def parse_two():
 
 if __name__ == "__main__":
     print ("Day2")
+    parse()
     parse_two()

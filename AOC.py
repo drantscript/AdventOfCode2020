@@ -1,12 +1,10 @@
-"""
-Advent of Code 2020 Helpers
-"""
+# Advent of Code 2020 Helpers
 
 import os
 
 def get_input_lines(day : int, format_func : callable(str) = None) -> list:
     """
-    : Read lines of current day to list, optionally formats \n
+    : Read lines of current day to list, optionally formats
     """
 
     print("Advent of Code 2020 Day" , str(day))
