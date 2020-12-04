@@ -2,114 +2,85 @@
 
 import AOC
 
-lines = AOC.get_input_lines(4, AOC.format_strip)
+def check_passports():
 
-required_keys = ["byr","iyr","eyr","hgt","hcl","ecl","pid"]
-ignored_key = "cid"
-end_passport = ""
+    lines = AOC.get_input_lines(4, AOC.format_strip)
 
-valid_passports = 0
-passports = []
+    # generate passports
+    passports = []
+    passport_entries = []
+    for line in lines:
 
-# generate passports
-passport_entries = []
-for line in lines:
+        if(line == ""):
+            passports.append(passport_entries[:])
+            passport_entries.clear()
+        else:
+            chunks = line.split()
+            for chunk in chunks:
+                passport_entries.append(chunk)
 
-    if(line == end_passport):
-        passports.append(passport_entries[:])
-        passport_entries.clear()
-    else:
-        chunks = line.split()
-        for chunk in chunks:
-            passport_entries.append(chunk)
+    passports.append(passport_entries)
 
-passports.append(passport_entries)
+    # generate passport requirements
+    def in_range(value : str, min : int, max : int):
+        return int(value) >= min and int(value) <= max
 
-# parse passports
-for passport in passports:
+    def pass_hgt(value : str):
+        if("cm" in value):
+            return in_range(value.replace("cm", ""), 150, 193)
+        elif("in" in value):
+            return in_range(value.replace("in", ""), 59, 76)
+        return False
 
-    passport_keys = []
-    key_values = {}
-    for entry in passport:
-        pair = entry.split(":")
-        passport_keys.append(pair[0])
-        key_values[pair[0]] = pair[1]
+    def pass_hcl(value : str):
+        if(value[0] == "#"):
+            if(len(sub := value.replace("#", "")) == 6):
+                for c in sub:
+                    if(c not in "0123456789abcdef"):
+                        return False
+                return True
+        return False
 
-    valid = True
-    valid_hcl_chars = "0123456789abcdef"
-    valid_ecl_strings = ["amb","blu","brn","gry","grn","hzl","oth"]
-    valid_pid_chars = "0123456789"
+    def pass_pid(value :str):
+        if(len(value) == 9):
+            for c in value:
+                if c not in "0123456789":
+                    return False
+            return True
+        return False
 
-    for key in required_keys:
-        if key not in passport_keys:
-            valid = False
-            print("Invalid key:", key, "in" , passport)
-        elif key == "byr":
-            value = int(key_values[key])
-            if(value < 1920 or value > 2002):
-                valid = False
-                print("Invalid byr:", value, "in" , passport)
-        elif key == "iyr":
-            value = int(key_values[key])
-            if(value < 2010 or value > 2020):
-                valid = False
-                print("Invalid iyr:",value, "in" , passport)
-        elif key == "eyr":
-            value = int(key_values[key])
-            if(value < 2020 or value > 2030):
-                valid = False
-                print("Invalid eyr:", value, "in" , passport)
-        elif key == "hgt":
-            value = key_values[key]
-            if("cm" in value):
-                sub = int(value.replace("cm", ""))
-                if(sub < 150 or sub > 193):
-                    valid = False
-                    print("Invalid hgt:", value, "in" , passport)
-            elif("in" in value):
-                sub = int(value.replace("in", ""))
-                if(sub < 59 or sub > 76):
-                    valid = False
-                    print("Invalid hgt:", value, "in" , passport)
-            else:
-                valid = False
-                print("Invalid hgt:", value, "in" , passport)
-        elif key == "hcl":
-            value = key_values[key]
-            if(value[0] == "#"):
-                sub = value.replace("#", "")
-                if(len(sub) == 6):
-                    for c in sub:
-                        if(c not in valid_hcl_chars):
-                            valid = False
-                            print("Invalid hcl:", value, "in" , passport)
-                else:
-                    valid = False
-                    print("Invalid hcl:", value, "in" , passport)
-            else:
-                valid = False
-                print("Invalid hcl:", value, "in" , passport)
-        elif key == "ecl":
-            value = key_values[key]
-            if(value not in valid_ecl_strings):
-                valid = False
-                print("Invalid ecl:", value, "in" , passport)
-        elif key == "pid":
-            value = key_values[key]
-            print("pid:" , value)
-            if(len(value) == 9):
-                for c in value:
-                    if(c not in valid_pid_chars):
-                        valid = False
-                        print("Invalid pid:", value, "in" , passport)
-            else:
-                valid = False
-                print("Invalid pid:", value, "in" , passport)
+    # map keys to requirement conditions
+    requirements = {}
+    requirements["byr"] = lambda val : in_range(val, 1920, 2002)
+    requirements["iyr"] = lambda val : in_range(val, 2010, 2020)
+    requirements["eyr"] = lambda val : in_range(val, 2020, 2030)
+    requirements["hgt"] = pass_hgt
+    requirements["hcl"] = pass_hcl
+    requirements["ecl"] = lambda val : val in ["amb","blu","brn","gry","grn","hzl","oth"]
+    requirements["pid"] = pass_pid
 
-        if(valid == False):
-            break
+    # validate passports
+    valid_passports = 0
+    for passport in passports:
 
-    if(valid == True):  
-        valid_passports += 1
+        valid = True
 
-print("Valid passports:" , valid_passports)
+        # convert entries to key-value pairs
+        pairs = {}
+        for entry in passport:
+            pair = entry.split(":")
+            pairs[pair[0]] = pair[1]
+
+        # check requirements
+        for key in requirements.keys():
+            if(not (valid := requirements[key](pairs[key]) if key in pairs.keys() else False)):
+                break
+
+        if(valid == True):  
+            valid_passports += 1
+
+    return valid_passports
+
+#end check_passports()
+
+print("Valid passports:" , check_passports())

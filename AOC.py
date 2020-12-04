@@ -6,8 +6,9 @@ def get_input_lines(day : int, format_func : callable(str) = None) -> list:
     """
     : Read lines of current day to list, optionally formats
     """
-
+    print("===========================")
     print("Advent of Code 2020 Day" , str(day))
+    print("===========================")
     
     file_name = "inputs/day" + str(day) + ".txt"
     assert os.path.exists(file_name) == True, str("Required file not found: " + file_name)
