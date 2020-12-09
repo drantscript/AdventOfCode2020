@@ -23,7 +23,7 @@ def get_input_lines(day : int, format_func : callable(str) = None) -> list:
     return lines
 
 def format_to_int(line : str) -> int:
-    return int(line)
+    return int(line.strip())
 
 def format_strip(line : str) -> str:
     return line.strip()
